@@ -1,0 +1,59 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "VicTutor Law RSS API",
+    "version": "1.0.0",
+    "description": "API for retrieving legal updates and court rulings from law.co.il via RSS feed based on a keyword."
+  },
+  "servers": [
+    {
+      "url": "https://law-rss.onrender.com",
+      "description": "Render-hosted Flask service"
+    }
+  ],
+  "paths": {
+    "/search": {
+      "get": {
+        "operationId": "search_law_rss",
+        "summary": "Search legal updates from law.co.il by keyword",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "description": "Search keyword (e.g., פטנטים, פרטיות, סימני מסחר)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of matching legal updates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "date": {
+                        "type": "string"
+                      },
+                      "link": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

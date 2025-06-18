@@ -24,14 +24,14 @@ def search_law_rss():
             if entry_date < cutoff_date:
                 continue  # skip old entries
 
-        if keyword in entry.title.lower() or keyword in entry.summary.lower():
+        if keyword in entry.title.lower() or keyword in entry.get("summary", "").lower():
             results.append({
                 "title": entry.title,
                 "date": entry.published,
                 "link": entry.link
             })
 
-    response = jsonify(results[:5])
+    response = jsonify(results[:10])  # נחזיר עד 10 תוצאות
     response.headers['Content-Type'] = 'application/json'
     return response
 

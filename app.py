@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import feedparser
 import os
+from datetime import datetime, timedelta
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -13,7 +15,15 @@ def search_law_rss():
     feed = feedparser.parse(feed_url)
     results = []
 
+    cutoff_date = datetime.now() - timedelta(days=60)
+
     for entry in feed.entries:
+        # parse entry date
+        if hasattr(entry, 'published_parsed'):
+            entry_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+            if entry_date < cutoff_date:
+                continue  # skip old entries
+
         if keyword in entry.title.lower() or keyword in entry.summary.lower():
             results.append({
                 "title": entry.title,
@@ -24,8 +34,7 @@ def search_law_rss():
     response = jsonify(results[:5])
     response.headers['Content-Type'] = 'application/json'
     return response
-    
+
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))  # השג פורט מ-Render
-    app.run(host="0.0.0.0", port=port)        # האזן לכל הכתובות בפורט הזה
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
